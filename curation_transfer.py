@@ -46,6 +46,8 @@ for i in range(0, TRANSFERS):
     check = driver.find_elements_by_css_selector('.curation_app_block_name') [-1].text
     driver.find_elements_by_css_selector('.RecommendedApps_paging_pagelink') [-1].click()
     def page_changed(self):
+        if len(driver.find_elements_by_css_selector('.curation_app_block_name')) == 0:
+            return False
         if check == driver.find_elements_by_css_selector('.curation_app_block_name') [-1].text:
             return False
         return True
