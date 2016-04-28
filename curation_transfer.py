@@ -1,4 +1,3 @@
-import time
 import pickle
 import re
 from selenium import webdriver
@@ -22,27 +21,34 @@ except FileNotFoundError:
 
 driver.get('https://steamcommunity.com/login/home/')
 
-if len(driver.find_elements_by_css_selector('.username')) == 0:
-    WebDriverWait(driver, 600).until(ec.presence_of_element_located((By.CSS_SELECTOR, '.username')))
-    pickle.dump(driver.get_cookies(), open("cookies.pkl","wb"))
+WebDriverWait(driver, 600).until(ec.presence_of_element_located((By.CSS_SELECTOR, '.username')))
+pickle.dump(driver.get_cookies(), open("cookies.pkl","wb"))
 
 curations = []
 for i in range(0, TRANSFERS):
     driver.get('https://steamcommunity.com/groups/'+GROUP_ONE+'#curation')
 
     WebDriverWait(driver, 10).until(ec.element_to_be_clickable((By.CSS_SELECTOR, '.RecommendedApps_paging_pagelink')))
+    check = driver.find_elements_by_css_selector('.curation_app_block_name') [-1].text
     driver.find_elements_by_css_selector('.RecommendedApps_paging_pagelink') [-1].click()
-    time.sleep(2)
+    def page_changed(self):
+        if check == driver.find_elements_by_css_selector('.curation_app_block_name') [-1].text:
+            return False
+        return True
+    WebDriverWait(driver, 10).until(page_changed)
     driver.find_elements_by_css_selector('.curation_app_block_name') [-1].click()
-    time.sleep(2)
+    WebDriverWait(driver, 10).until(ec.element_to_be_clickable((By.PARTIAL_LINK_TEXT, 'Delete this recommendation')))
     delete = driver.find_element_by_partial_link_text('Delete this recommendation')
     blurb = driver.find_element_by_css_selector('.curation_app_details_blurb').text.strip()
     appid, app = re.match(r"^Curator_DeleteRecommendation\('"+GROUP_ONE+r"',(\d+),"+r'"(.*)"\);',delete.get_attribute('onclick')).group(1, 2)
     curations.append({'app': app, 'appid': appid, 'blurb': blurb})
 
     delete.click()
-    while len(driver.find_elements_by_css_selector('.btn_green_white_innerfade.btn_medium span')) < 2:
-        time.sleep(1)
+    def button_exists(self):
+        if len(driver.find_elements_by_css_selector('.btn_green_white_innerfade.btn_medium span')) > 1:
+            return True
+        return False
+    WebDriverWait(driver, 10).until(button_exists)
     driver.find_elements_by_css_selector('.btn_green_white_innerfade.btn_medium span') [1].click()
 
 for curation in curations:
