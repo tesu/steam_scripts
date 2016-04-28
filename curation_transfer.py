@@ -22,7 +22,6 @@ except FileNotFoundError:
 driver.get('https://steamcommunity.com/login/home/')
 
 WebDriverWait(driver, 600).until(ec.presence_of_element_located((By.CSS_SELECTOR, '.username')))
-pickle.dump(driver.get_cookies(), open("cookies.pkl","wb"))
 
 curations = []
 for i in range(0, TRANSFERS):
@@ -63,4 +62,5 @@ for curation in curations:
 
     print('Successfully transferred {0}\'s curation: {1}'.format(curation['app'], curation['blurb']))
 
+pickle.dump(driver.get_cookies(), open("cookies.pkl","wb"))
 driver.quit()
