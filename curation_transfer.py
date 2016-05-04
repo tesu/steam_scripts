@@ -57,7 +57,7 @@ for i in range(0, TRANSFERS):
     delete = driver.find_element_by_partial_link_text('Delete this recommendation')
     blurb = driver.find_element_by_css_selector('.curation_app_details_blurb').text.strip()
     appid, app = re.match(r"^Curator_DeleteRecommendation\('"+GROUP_ONE+r"',(\d+),"+r'"(.*)"\);',delete.get_attribute('onclick')).group(1, 2)
-    curations.append({'app': app, 'appid': appid, 'blurb': blurb})
+    curations.append({'app': re.sub(r'\\','',app), 'appid': appid, 'blurb': blurb})
 
     print('Grabbed {0}\'s curation: {1}'.format(curations[i]['app'], curations[i]['blurb']), flush=True)
 
